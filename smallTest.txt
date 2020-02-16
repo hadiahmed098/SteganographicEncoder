@@ -1,1 +1,0 @@
-quick test bc message.txt is too large

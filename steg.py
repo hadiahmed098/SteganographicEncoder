@@ -29,13 +29,15 @@ def bytes_to_bits(text_bytes):
 # input: image bytes, text bits
 # output: bytes of new image
 def encode_bits_in_bytes(image_bytes, text_bits):
-    output_bytes = []
-    byte_counter = 0;
+    # Error checking to avoid any out-of-bound errors before encoding
+    if len(ibytes) < len(tbits) * 8:
+        raise IndexError("size of image file is larger than size of image")
 
-    for (i, bits) in enumerate(text_bits):
-        for (j, bit) in enumerate(bits):
+    output_bytes = []
+    byte_counter = 0
+    for bits in text_bits:
+        for bit in bits:
             output_bytes.append((image_bytes[byte_counter] & 254) | int(bit))
-            print(image_bytes[byte_counter], (image_bytes[byte_counter] & 254) | int(bit))
             byte_counter += 1
 
     output_bytes = np.concatenate((np.asarray(output_bytes), image_bytes[byte_counter:]))
@@ -47,7 +49,7 @@ def save_image_bytes(image_bytes, output_file_name, image_dim):
     image_reshape = image_bytes.reshape(image_dim)
     cv2.imwrite(output_file_name, image_reshape)
 
-tbits = bytes_to_bits(load_text_bytes('smallTest.txt'))
+tbits = bytes_to_bits(load_text_bytes('message.txt'))
 (ibytes, size) = load_image_bytes('donut.png')
 
 obytes = encode_bits_in_bytes(ibytes, tbits)
