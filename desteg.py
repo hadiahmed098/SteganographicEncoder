@@ -3,10 +3,10 @@ import binascii as bas
 
 # Function will take an image file and return the color bytes of each pixel in a 1D array
 # input: image file name
-# output: 1xN numpy array, tupple with image dimensions
+# output: 1xN numpy array
 def load_image_bytes(file_name):
     image_bytes = cv2.imread(file_name, cv2.IMREAD_COLOR)
-    return image_bytes.flatten(), image_bytes.shape
+    return image_bytes.flatten()
 
 # Function will take image bytes and return the bits from the least significan bit of each byte
 # input: np array of image pixel bytes
@@ -47,8 +47,8 @@ def save_text(text_bytes, filename):
     with open(filename, 'wb') as file:
         file.writelines(output_bytes)
 
-(ibytes, size) = load_image_bytes('test.png')
+ibytes = load_image_bytes('encoded_message.png')
 tbits = decode_from_bytes(ibytes)
 
 tbytes = bits_to_bytes(tbits)
-save_text(tbytes, 'test.txt')
+save_text(tbytes, 'message_output.txt')
