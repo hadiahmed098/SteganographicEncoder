@@ -15,8 +15,6 @@ def load_image_bytes(file_name):
 # input: text file name
 # output: byte string of the text file with padding
 def load_text_bytes(file_name, bytes_length):
-    # Error checking to verify file exists
-
 
     with open(file_name, 'rb') as f:
         text_bytes = f.read()
