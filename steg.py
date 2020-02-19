@@ -3,24 +3,10 @@ import numpy as np
 import argparse
 import os.path
 
-def main():
-    try:
-        (i_bytes, size) = load_image_bytes(args.input)
-        t_bits = bytes_to_bits(load_text_bytes(args.message, size[0] * size[1] * size[2]))
-
-        o_bytes = encode_bits_in_bytes(i_bytes, t_bits)
-        save_image_bytes(np.asarray(o_bytes), args.output, size)
-    except Exception as e:
-        print('%s: %s' % (type(e).__name__, e))
-
 # Function will take an image file and return the color bytes of each pixel in a 1D array
 # input: image file name
 # output: 1xN numpy array, tuple with image dimensions
 def load_image_bytes(file_name):
-    # Error checking to verify file exists
-    if not os.path.isfile(file_name):
-        raise FileExistsError("input file must exist and be a valid file")
-
     image_bytes = cv2.imread(file_name, cv2.IMREAD_COLOR)
     return image_bytes.flatten(), image_bytes.shape
 
@@ -30,8 +16,7 @@ def load_image_bytes(file_name):
 # output: byte string of the text file with padding
 def load_text_bytes(file_name, bytes_length):
     # Error checking to verify file exists
-    if not os.path.isfile(file_name):
-        raise FileExistsError("message file must exist and be a valid file")
+
 
     with open(file_name, 'rb') as f:
         text_bytes = f.read()
@@ -80,6 +65,30 @@ def encode_bits_in_bytes(image_bytes, text_bits):
 def save_image_bytes(image_bytes, output_file_name, image_dim):
     image_reshape = image_bytes.reshape(image_dim)
     cv2.imwrite(output_file_name, image_reshape)
+
+def main():
+    try:
+        # Error checking on files
+        if not os.path.isfile(args.input):
+            raise FileNotFoundError("input file must exist and be a valid file")
+        elif args.input.split('.')[1] != 'png':
+            raise ValueError("input file must be a .png")
+
+        if not os.path.isfile(args.message):
+            raise FileNotFoundError("message file must exist and be a valid file")
+        elif args.message.split('.')[1] != 'txt':
+            raise ValueError("message file must be a .txt")
+
+        if args.output.split('.')[1] != 'png':
+            raise FileNotFoundError("output file must be a .png")
+
+        (i_bytes, size) = load_image_bytes(args.input)
+        t_bits = bytes_to_bits(load_text_bytes(args.message, size[0] * size[1] * size[2]))
+
+        o_bytes = encode_bits_in_bytes(i_bytes, t_bits)
+        save_image_bytes(np.asarray(o_bytes), args.output, size)
+    except Exception as e:
+        print('%s: %s' % (type(e).__name__, e))
 
 # Setup commandline parser
 parser = argparse.ArgumentParser(description='Encode an image using steganography', allow_abbrev=True,

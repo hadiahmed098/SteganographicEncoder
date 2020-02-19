@@ -1,5 +1,7 @@
 import cv2
 import binascii as bas
+import argparse
+import os.path
 
 # Function will take an image file and return the color bytes of each pixel in a 1D array
 # input: image file name
@@ -47,8 +49,36 @@ def save_text(text_bytes, filename):
     with open(filename, 'wb') as file:
         file.writelines(output_bytes)
 
-ibytes = load_image_bytes('encoded_message.png')
-tbits = decode_from_bytes(ibytes)
+def main():
+    try:
+        # Error checking on files
+        if not os.path.isfile(args.input):
+            raise FileNotFoundError("input file must exist and be a valid file")
+        elif args.input.split('.')[1] != 'png':
+            raise ValueError("input file must be a .png")
 
-tbytes = bits_to_bytes(tbits)
-save_text(tbytes, 'message_output.txt')
+        if args.output.split('.')[1] != 'txt':
+            raise ValueError("output file must be a .txt")
+
+        i_bytes = load_image_bytes(args.input)
+        t_bits = decode_from_bytes(i_bytes)
+
+        t_bytes = bits_to_bytes(t_bits)
+        save_text(t_bytes, args.output)
+    except Exception as e:
+        print('%s: %s' % (type(e).__name__, e))
+
+# Setup commandline parser
+parser = argparse.ArgumentParser(description='Decode an image using steganography', allow_abbrev=True,
+                                 usage='desteg.py [-h] <inputfile> '
+                                       '[-output <outputfile>]')
+
+# Add commandline arguments
+parser.add_argument('input', help="image input file, .png")
+parser.add_argument('-output', default='message_decoded.txt', help='message output file, .txt')
+
+args = parser.parse_args()
+
+# Establish main method
+if __name__ == '__main__':
+    main()
