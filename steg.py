@@ -42,17 +42,21 @@ def bytes_to_bits(text_bytes):
 # Function will take bits of a text file and bytes of an image file and use LSB encoding
 # input: image bytes, text bits
 # output: bytes of new image
-def encode_bits_in_bytes(image_bytes, text_bits):
+def encode_bits_in_bytes(image_bytes, text_bits, bits_number):
     # Error checking to avoid any out-of-bound errors before encoding
-    if len(image_bytes) < len(text_bits) * 8:
+    if len(image_bytes) < len(text_bits) * 8:  # TODO modify check to account for bits_number
         raise IndexError(f"size of image file ({len(image_bytes)}) is smaller than size of message ({len(text_bits) * 8})")
 
     output_bytes = []
     byte_counter = 0
     for bits in text_bits:
-        for bit in bits:
-            output_bytes.append((image_bytes[byte_counter] & 254) | int(bit))
-            byte_counter += 1
+        print('2')
+    # TODO modify for loops to account for each image byte having more than one encoded bit
+    # (((254 << i) & 255) + (2**i) - 1) will shift the open bit spot to the ith spot
+    for bit in bits:
+        for i in range(bits_number):
+            output_bytes.append((image_bytes[byte_counter] & (((254 << i) & 255) + (2**i) - 1) | int(bit)))
+        byte_counter += 1
 
     output_bytes = np.concatenate((np.asarray(output_bytes), image_bytes[byte_counter:]))
     return output_bytes
@@ -83,17 +87,18 @@ def main():
         (i_bytes, size) = load_image_bytes(args.input)
         t_bits = bytes_to_bits(load_text_bytes(args.message, size[0] * size[1] * size[2]))
 
-        o_bytes = encode_bits_in_bytes(i_bytes, t_bits)
+        o_bytes = encode_bits_in_bytes(i_bytes, t_bits, args.bitsnumber)
         save_image_bytes(np.asarray(o_bytes), args.output, size)
     except Exception as e:
         print('%s: %s' % (type(e).__name__, e))
 
 # Setup commandline parser
 parser = argparse.ArgumentParser(description='Encode an image using steganography', allow_abbrev=True,
-                                 usage='steg.py [-h] <inputfilename> <messagefilename> '
-                                       '[-output <outputfile>]')
+                                 usage='steg.py [-h] <numberofbits (1-7)> <inputfilename> <messagefilename> '
+                                       '[-output <outputfile>] ')
 
 # Add commandline arguments
+parser.add_argument('bitsnumber', help="the number of bits used to encode", type=int, choices=range(1, 8))
 parser.add_argument('input', help="image input file, .png")
 parser.add_argument('message', help='message input file, .txt')
 parser.add_argument('-output', default='message_encoded.png', help='image output file, .png')
