@@ -1,5 +1,3 @@
 .idea/
-encoded_message.png
-message_encoded.png
-message_output.txt
-message_decoded.txt
+*.png
+*.txt
