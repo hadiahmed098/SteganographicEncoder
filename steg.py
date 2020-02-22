@@ -41,7 +41,6 @@ def bytes_to_bits(text_bytes, bytes_length, bits_number):
 
     if len(output_bits) > bytes_length * bits_number:
         return output_bits[:bytes_length*bits_number]
-
     return output_bits
 
 
@@ -56,19 +55,14 @@ def encode_bits_in_bytes(image_bytes, text_bits, bits_number):
 
     output_bytes = []
     bit_counter = 0
-    try:
-        for byte in image_bytes:
-            bit_encode = 0
-            temp_byte = byte
-            while bit_encode < bits_number:
-                temp_byte = (temp_byte & (((254 << bit_encode) & 255) + (2 ** bit_encode) - 1)) | (int(text_bits[bit_counter]) << bit_encode)
-                bit_encode += 1
-                bit_counter += 1
-            output_bytes.append(temp_byte)
-    except Exception as e:
-        print(len(image_bytes) * bits_number)
-        print(bit_counter)
-        print(len(text_bits))
+    for byte in image_bytes:
+        bit_encode = 0
+        temp_byte = byte
+        while bit_encode < bits_number:
+            temp_byte = (temp_byte & (((254 << bit_encode) & 255) + (2 ** bit_encode) - 1)) | (int(text_bits[bit_counter]) << bit_encode)
+            bit_encode += 1
+            bit_counter += 1
+        output_bytes.append(temp_byte)
 
     return output_bytes
 
@@ -80,7 +74,7 @@ def save_image_bytes(image_bytes, output_file_name, image_dim):
     cv2.imwrite(output_file_name, image_reshape)
 
 def main():
-    #try:
+    try:
         # Error checking on files
         if not os.path.isfile(args.input):
             raise FileNotFoundError("input file must exist and be a valid file")
@@ -101,13 +95,13 @@ def main():
 
         o_bytes = encode_bits_in_bytes(i_bytes, t_bits, args.bitsnumber)
         save_image_bytes(np.asarray(o_bytes), args.output, size)
-   # except Exception as e:
-        #print('%s: %s' % (type(e).__name__, e))
+    except Exception as e:
+        print('%s: %s' % (type(e).__name__, e))
 
 # Setup commandline parser
 parser = argparse.ArgumentParser(description='Encode an image using steganography', allow_abbrev=True,
-                                 usage='steg.py [-h] <numberofbits (1-8)> <inputfilename> <messagefilename> '
-                                       '[-output <outputfile>] ')
+                                 usage='steg.py [-h] <number of bits (1-8)> <input filename> <message filename> '
+                                       '[-output <output filename>] ')
 
 # Add commandline arguments
 parser.add_argument('bitsnumber', help="the number of bits used to encode", type=int, choices=range(1, 9))
