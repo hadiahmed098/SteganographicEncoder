@@ -56,13 +56,12 @@ def encode_bits_in_bytes(image_bytes, text_bits, bits_number):
     output_bytes = []
     bit_counter = 0
     for byte in image_bytes:
-        bit_encode = 0
-        temp_byte = byte
-        while bit_encode < bits_number:
-            temp_byte = (temp_byte & (((254 << bit_encode) & 255) + (2 ** bit_encode) - 1)) | (int(text_bits[bit_counter]) << bit_encode)
-            bit_encode += 1
+        bit_encode = bits_number - 1
+        while 0 <= bit_encode:
+            byte = (byte & (((254 << bit_encode) & 255) + (2 ** bit_encode) - 1)) | (int(text_bits[bit_counter]) << bit_encode)
+            bit_encode -= 1
             bit_counter += 1
-        output_bytes.append(temp_byte)
+        output_bytes.append(byte)
 
     return output_bytes
 
@@ -74,7 +73,7 @@ def save_image_bytes(image_bytes, output_file_name, image_dim):
     cv2.imwrite(output_file_name, image_reshape)
 
 def main():
-    try:
+    #try:
         # Error checking on files
         if not os.path.isfile(args.input):
             raise FileNotFoundError("input file must exist and be a valid file")
@@ -95,8 +94,8 @@ def main():
 
         o_bytes = encode_bits_in_bytes(i_bytes, t_bits, args.bitsnumber)
         save_image_bytes(np.asarray(o_bytes), args.output, size)
-    except Exception as e:
-        print('%s: %s' % (type(e).__name__, e))
+    #except Exception as e:
+       # print('%s: %s' % (type(e).__name__, e))
 
 # Setup commandline parser
 parser = argparse.ArgumentParser(description='Encode an image using steganography', allow_abbrev=True,

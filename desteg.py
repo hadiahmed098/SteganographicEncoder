@@ -23,13 +23,9 @@ def decode_from_bytes(image_bytes, bits_number):
     return text_bits
 
 # Function will take an array of bits and turn it into an array of bytes using a string join
-# input: list of strings where each string is a string of bits
+# input: list of strings where each string is a single bit
 # output: list of strings where each string is a single byte
-def bits_to_bytes(text_bits_string):
-    text_bits = []
-    for bit_string in text_bits_string:
-        text_bits.extend(list(bit_string))
-    # TODO remove
+def bits_to_bytes(text_bits):
     text_bytes = []
     pointer = 0  # Used to point to where each byte starts
     while pointer < len(text_bits):
@@ -42,7 +38,6 @@ def bits_to_bytes(text_bits_string):
 #   written to a file
 # input: byte list, filename
 def save_text(text_bytes, filename):
-
     hex_bytes = []
     for byte in text_bytes:
         # Turns each byte into a decimal number, then to a hex number
