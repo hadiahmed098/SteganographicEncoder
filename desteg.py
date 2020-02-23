@@ -13,11 +13,13 @@ def load_image_bytes(file_name):
 # Function will take image bytes and return the bits from the least significan bit of each byte
 # input: np array of image pixel bytes
 # output: list of strings where each string is a single bit
-def decode_from_bytes(image_bytes):
+def decode_from_bytes(image_bytes, bits_number):
     text_bits = []
     for byte in image_bytes:
         # Turn the byte into a binary string and index only the last bit
-        text_bits.append(bin(int(byte))[len(bin(int(byte)))-1])
+        # TODO change decoding image bytes to grab last n bits where n is the bits number
+        temp_bit_list = list(bin(int(byte))[2:].zfill(8))
+        text_bits.extend(temp_bit_list[-1 * bits_number:])
     return text_bits
 
 # Function will take an array of bits and turn it into an array of bytes using a string join
@@ -50,7 +52,7 @@ def save_text(text_bytes, filename):
         file.writelines(output_bytes)
 
 def main():
-    try:
+    #try:
         # Error checking on files
         if not os.path.isfile(args.input):
             raise FileNotFoundError("input file must exist and be a valid file")
@@ -61,19 +63,20 @@ def main():
             raise ValueError("output file must be a .txt")
 
         i_bytes = load_image_bytes(args.input)
-        t_bits = decode_from_bytes(i_bytes)
+        t_bits = decode_from_bytes(i_bytes, args.bitsnumber)
 
         t_bytes = bits_to_bytes(t_bits)
         save_text(t_bytes, args.output)
-    except Exception as e:
-        print('%s: %s' % (type(e).__name__, e))
+    #except Exception as e:
+        #print('%s: %s' % (type(e).__name__, e))
 
 # Setup commandline parser
 parser = argparse.ArgumentParser(description='Decode an image using steganography', allow_abbrev=True,
-                                 usage='desteg.py [-h] <inputfile> '
-                                       '[-output <outputfile>]')
+                                 usage='desteg.py [-h] <number of bits (1-8)> <input filename> '
+                                       '[-output <output filename>]')
 
 # Add commandline arguments
+parser.add_argument('bitsnumber', help="the number of bits used to encode", type=int, choices=range(1, 9))
 parser.add_argument('input', help="image input file, .png")
 parser.add_argument('-output', default='message_decoded.txt', help='message output file, .txt')
 
