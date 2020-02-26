@@ -52,7 +52,7 @@ def save_text(text_bytes, filename):
         file.writelines(output_bytes)
 
 def main():
-    #try:
+    try:
         # Error checking on files
         if not os.path.isfile(args.input):
             raise FileNotFoundError("input file must exist and be a valid file")
@@ -67,8 +67,8 @@ def main():
 
         t_bytes = bits_to_bytes(t_bits)
         save_text(t_bytes, args.output)
-    #except Exception as e:
-        #print('%s: %s' % (type(e).__name__, e))
+    except Exception as e:
+        print('%s: %s' % (type(e).__name__, e))
 
 # Setup commandline parser
 parser = argparse.ArgumentParser(description='Decode an image using steganography', allow_abbrev=True,

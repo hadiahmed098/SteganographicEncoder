@@ -73,7 +73,7 @@ def save_image_bytes(image_bytes, output_file_name, image_dim):
     cv2.imwrite(output_file_name, image_reshape)
 
 def main():
-    #try:
+    try:
         # Error checking on files
         if not os.path.isfile(args.input):
             raise FileNotFoundError("input file must exist and be a valid file")
@@ -94,8 +94,8 @@ def main():
 
         o_bytes = encode_bits_in_bytes(i_bytes, t_bits, args.bitsnumber)
         save_image_bytes(np.asarray(o_bytes), args.output, size)
-    #except Exception as e:
-       # print('%s: %s' % (type(e).__name__, e))
+    except Exception as e:
+        print('%s: %s' % (type(e).__name__, e))
 
 # Setup commandline parser
 parser = argparse.ArgumentParser(description='Encode an image using steganography', allow_abbrev=True,
